@@ -5,16 +5,15 @@ import com.intellij.icons.AllIcons;
 import com.intellij.lang.java.JavaLanguage;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Disposer;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
+import com.intellij.ui.tree.AsyncTreeModel;
+import com.intellij.ui.tree.StructureTreeModel;
 import com.intellij.ui.treeStructure.CachingSimpleNode;
 import com.intellij.ui.treeStructure.SimpleNode;
 import com.intellij.ui.treeStructure.SimpleTree;
-import com.intellij.ui.treeStructure.SimpleTreeBuilder;
 import com.intellij.ui.treeStructure.SimpleTreeStructure;
 import com.intellij.util.OpenSourceUtil;
-import com.zhaow.restful.common.KtFunctionHelper;
 import com.zhaow.restful.common.PsiMethodHelper;
 import com.zhaow.restful.common.ToolkitIcons;
 import com.zhaow.restful.method.HttpMethod;
@@ -24,11 +23,8 @@ import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.kotlin.idea.KotlinLanguage;
-import org.jetbrains.kotlin.psi.KtNamedFunction;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.event.InputEvent;
 import java.util.ArrayList;
@@ -41,7 +37,7 @@ public class RestServiceStructure extends SimpleTreeStructure {
     private final RestServiceProjectsManager myProjectsManager;
     private final Map<RestServiceProject, ProjectNode> myProjectToNodeMapping = new THashMap<>();
     RestServiceDetail myRestServiceDetail;
-    private SimpleTreeBuilder myTreeBuilder;
+    private StructureTreeModel<?> myStructureModel;
     private SimpleTree myTree;
     private RootNode myRoot = new RootNode();
     private int serviceCount = 0;
@@ -56,11 +52,9 @@ public class RestServiceStructure extends SimpleTreeStructure {
 
         configureTree(tree);
 
-        myTreeBuilder = new SimpleTreeBuilder(tree, (DefaultTreeModel) tree.getModel(), this, null);
-        Disposer.register(myProject, myTreeBuilder);
-
-        myTreeBuilder.initRoot();
-        myTreeBuilder.expand(myRoot, null);
+        myStructureModel = new StructureTreeModel<>(this, myProject);
+        tree.setModel(new AsyncTreeModel(myStructureModel, myProject));
+        tree.expandRow(0);
 
     }
 
@@ -140,7 +134,7 @@ public class RestServiceStructure extends SimpleTreeStructure {
                 myProjectToNodeMapping.put(each, node);
             }
         }
-        myTreeBuilder.getUi().doUpdateFromRoot();
+        myStructureModel.invalidate();
 //        ((CachingSimpleNode) myRoot.getParent()).cleanUpCache();
 //        myRoot.childrenChanged();
         myRoot.updateProjectNodes(projects);
@@ -154,7 +148,7 @@ public class RestServiceStructure extends SimpleTreeStructure {
         if (node == null) {
             return;
         }
-        myTreeBuilder.addSubtreeToUpdateByElement(node);
+        myStructureModel.invalidate();
     }
 
     private void updateUpTo(SimpleNode node) {
@@ -388,14 +382,6 @@ public class RestServiceStructure extends SimpleTreeStructure {
                 requestParams = psiMethodHelper.buildParamString();
                 requestBodyJson = psiMethodHelper.buildRequestBodyJson();
 
-            } else if (psiElement.getLanguage() == KotlinLanguage.INSTANCE) {
-                if (psiElement instanceof KtNamedFunction) {
-                    KtNamedFunction ktNamedFunction = (KtNamedFunction) psiElement;
-                    KtFunctionHelper ktFunctionHelper = (KtFunctionHelper) KtFunctionHelper.create(ktNamedFunction).withModule(serviceItem.getModule());
-                    requestParams = ktFunctionHelper.buildParamString();
-                    requestBodyJson = ktFunctionHelper.buildRequestBodyJson();
-                }
-
             }
 
             myRestServiceDetail.addRequestParamsTab(requestParams);
@@ -425,11 +411,6 @@ public class RestServiceStructure extends SimpleTreeStructure {
                 PsiMethod psiMethod = myServiceItem.getPsiMethod();
                 OpenSourceUtil.navigate(psiMethod);
 
-            } else if (psiElement.getLanguage() == KotlinLanguage.INSTANCE) {
-                if (psiElement instanceof KtNamedFunction) {
-                    KtNamedFunction ktNamedFunction = (KtNamedFunction) psiElement;
-                    OpenSourceUtil.navigate(ktNamedFunction);
-                }
             }
         }
 

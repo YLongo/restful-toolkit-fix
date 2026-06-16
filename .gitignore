@@ -4,6 +4,7 @@ idea-sandbox
 /out/
 /MybatisX.iml
 .gradle/
+.intellijPlatform/
 .idea
 *.iml
 local.properties

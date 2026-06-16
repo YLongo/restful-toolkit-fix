@@ -18,9 +18,8 @@
 *( *Windows*: `Ctrl + Enter`; *Mac*: `Command + Enter` ) .
 
  #### supported Spring framework (Spring MVC / Spring Boot) 
- #### supported JAX-RS )
- #### supported Kotlin language
-------
+ #### supported JAX-RS ) 
+ ------
 ### 一套 Restful 服务开发辅助工具集。
 
 * 1.根据 URL 直接导航到对应的方法定义 ( `Ctrl \` or `Ctrl Alt N` ); 
@@ -30,7 +29,7 @@
 * 5.其他一些个人觉得有用的小功能, java 类上添加 "Convert to JSON" 功能，格式化 json 数据 ( *Windows*: `Ctrl + Enter`; *Mac*: `Command + Enter` )。  
 
  #### 支持 Spring 体系 (Spring MVC / Spring Boot) 
- #### 支持 JAX-RS 
- #### 支持 Kotlin 语言语法
- ------------
+ #### 支持 JAX-RS
+ #### 删除了对Kotlin的支持
+  ------------
  

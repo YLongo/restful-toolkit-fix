@@ -8,9 +8,6 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
 import com.zhaow.restful.common.PsiMethodHelper;
 import com.zhaow.restful.method.Parameter;
-import org.jetbrains.kotlin.asJava.LightClassUtilsKt;
-import org.jetbrains.kotlin.psi.KtClassOrObject;
-import org.jetbrains.kotlin.psi.KtNamedFunction;
 
 import java.awt.datatransfer.StringSelection;
 import java.util.List;
@@ -29,15 +26,6 @@ public class GenerateQueryParamJsonAction extends SpringAnnotatedMethodAction {
         PsiElement psiElement = e.getData(CommonDataKeys.PSI_ELEMENT);
         if (psiElement instanceof PsiMethod) {
             psiMethod = (PsiMethod) psiElement;
-        }
-
-        if (psiElement instanceof KtNamedFunction) {
-            KtNamedFunction ktNamedFunction = (KtNamedFunction) psiElement;
-            PsiElement parentPsi = psiElement.getParent().getParent();
-            if (parentPsi instanceof KtClassOrObject) {
-                List<PsiMethod> psiMethods = LightClassUtilsKt.toLightMethods(ktNamedFunction);
-                psiMethod = psiMethods.get(0);
-            }
         }
 
         PsiMethodHelper psiMethodHelper = PsiMethodHelper.create(psiMethod);

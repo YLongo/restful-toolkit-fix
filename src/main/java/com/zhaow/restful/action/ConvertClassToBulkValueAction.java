@@ -8,9 +8,6 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiField;
 import com.zhaow.restful.common.PsiClassHelper;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.kotlin.asJava.LightClassUtil;
-import org.jetbrains.kotlin.asJava.LightClassUtilsKt;
-import org.jetbrains.kotlin.psi.KtClassOrObject;
 
 import java.awt.datatransfer.StringSelection;
 import java.util.ArrayList;
@@ -69,10 +66,6 @@ public class ConvertClassToBulkValueAction extends AbstractBaseAction {
         if (psiElement instanceof PsiClass) {
             psiClass = (PsiClass) psiElement;
 
-        } else if (psiElement instanceof KtClassOrObject) {
-            if (LightClassUtil.INSTANCE.canGenerateLightClass((KtClassOrObject) psiElement)) {
-                psiClass = LightClassUtilsKt.toLightClass((KtClassOrObject) psiElement);
-            }
         }
         return psiClass;
     }
@@ -80,6 +73,6 @@ public class ConvertClassToBulkValueAction extends AbstractBaseAction {
     @Override
     public void update(AnActionEvent e) {
         PsiElement psiElement = e.getData(CommonDataKeys.PSI_ELEMENT);
-        setActionPresentationVisible(e, psiElement instanceof PsiClass || psiElement instanceof KtClassOrObject);
+        setActionPresentationVisible(e, psiElement instanceof PsiClass);
     }
 }

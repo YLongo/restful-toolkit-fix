@@ -10,8 +10,6 @@ import com.zhaow.restful.common.ToolkitIcons;
 import com.zhaow.restful.method.HttpMethod;
 import com.zhaow.restful.method.action.ModuleHelper;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.kotlin.psi.KtClass;
-import org.jetbrains.kotlin.psi.KtNamedFunction;
 
 import javax.swing.*;
 
@@ -109,10 +107,6 @@ public class RestServiceItem implements NavigationItem {
             if (psiElement instanceof PsiMethod) {
                 PsiMethod psiMethod = ((PsiMethod) psiElement);;
                 location = psiMethod.getContainingClass().getName().concat("#").concat(psiMethod.getName());
-            } else if (psiElement instanceof KtNamedFunction) {
-                KtNamedFunction ktNamedFunction = (KtNamedFunction) RestServiceItem.this.psiElement;
-                String className = ((KtClass) psiElement.getParent().getParent()).getName();
-                location = className.concat("#").concat(ktNamedFunction.getName());
             }
 
             return "(" + location + ")";

@@ -1,5 +1,5 @@
-<idea-plugin url="https://plugins.jetbrains.com/plugin/16788-restfultoolkit-fix" allow-bundled-update="true">
-    <id>me.jinghong.restful.toolkit</id>
+<idea-plugin>
+    <id>me.jinghong.restful.toolkit.fix</id>
     <name>RestfulToolkit-fix</name>
     <version>2.0.7</version>
     <vendor email="153335058@qq.com" url="https://gitee.com/youthdream">jinghong</vendor>
@@ -15,7 +15,7 @@
  </ul>
    <p> support Spring framework (Spring MVC / Spring Boot)
    <p> support JAX-RS
-   <p> support Java and Kotlin languages
+   <p> support Java language
 
   <hr />
   <h3>一套 RESTful 服务开发辅助工具集。</h3>
@@ -28,7 +28,7 @@
 </ul>
    <p>支持 Spring 体系 (Spring MVC / Spring Boot)
    <p>支持 JAX-RS
-   <p>支持 Java 和 Kotlin 语言。
+   <p>支持 Java 语言。
 
     ]]></description>
 
@@ -79,9 +79,7 @@
     <depends>com.intellij.modules.lang</depends>
     -->
     <depends>com.intellij.modules.platform</depends>
-    <depends>com.intellij.properties</depends>
-    <depends>org.jetbrains.plugins.yaml</depends>
-    <depends>org.jetbrains.kotlin</depends>
+    <depends>com.intellij.modules.java</depends>
 
     <project-components>
         <component>
