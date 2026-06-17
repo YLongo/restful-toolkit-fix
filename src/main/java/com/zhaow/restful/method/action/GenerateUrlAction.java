@@ -23,7 +23,7 @@ public class GenerateUrlAction /*extends RestfulMethodSpringSupportedAction*/ ex
     public void actionPerformed(AnActionEvent e) {
 
         myEditor = e.getData(CommonDataKeys.EDITOR);
-        PsiMethod psiMethod = psiMethodAtCaret(e);
+        PsiMethod psiMethod = restMethodAtCaret(e);
         if (psiMethod == null) {
             return;
         }

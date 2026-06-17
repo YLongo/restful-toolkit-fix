@@ -11,15 +11,21 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
+import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiMethod;
+import com.intellij.psi.PsiModifierList;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.ui.JBColor;
+import com.zhaow.restful.annotations.JaxrsHttpMethodAnnotation;
+import com.zhaow.restful.annotations.SpringControllerAnnotation;
+import com.zhaow.restful.annotations.SpringRequestMethodAnnotation;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.util.Arrays;
 
 
 public abstract class AbstractBaseAction extends AnAction {
@@ -53,6 +59,49 @@ public abstract class AbstractBaseAction extends AnAction {
     protected PsiClass psiClassAtCaret(AnActionEvent e) {
         PsiElement element = psiElementAtCaret(e);
         return element == null ? null : PsiTreeUtil.getParentOfType(element, PsiClass.class);
+    }
+
+    /**
+     * 取光标所在方法，并校验它是 REST 端点（标注了 Spring/JAX-RS 请求映射注解，
+     * 或所在类是 @RestController/@Controller）。
+     * update() 无法做精确过滤（data context 不可靠），所以语义校验放在这里，
+     * 由 actionPerformed 调用；非 REST 方法返回 null，调用方 early return。
+     */
+    @Nullable
+    protected PsiMethod restMethodAtCaret(AnActionEvent e) {
+        PsiMethod psiMethod = psiMethodAtCaret(e);
+        if (psiMethod == null) {
+            return null;
+        }
+        PsiModifierList modifiers = psiMethod.getModifierList();
+        if (modifiers != null) {
+            for (PsiAnnotation annotation : modifiers.getAnnotations()) {
+                String qn = annotation.getQualifiedName();
+                if (qn == null) {
+                    continue;
+                }
+                boolean restMapping = Arrays.stream(SpringRequestMethodAnnotation.values())
+                        .anyMatch(a -> a.getQualifiedName().equals(qn))
+                        || Arrays.stream(JaxrsHttpMethodAnnotation.values())
+                        .anyMatch(a -> a.getQualifiedName().equals(qn));
+                if (restMapping) {
+                    return psiMethod;
+                }
+            }
+        }
+        return isRestController(psiMethod.getContainingClass()) ? psiMethod : null;
+    }
+
+    private boolean isRestController(PsiClass containingClass) {
+        if (containingClass == null) {
+            return false;
+        }
+        PsiModifierList modifierList = containingClass.getModifierList();
+        if (modifierList == null) {
+            return false;
+        }
+        return modifierList.findAnnotation(SpringControllerAnnotation.REST_CONTROLLER.getQualifiedName()) != null
+                || modifierList.findAnnotation(SpringControllerAnnotation.CONTROLLER.getQualifiedName()) != null;
     }
 
     /**

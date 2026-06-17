@@ -21,7 +21,7 @@ GenerateFullUrlAction extends SpringAnnotatedMethodAction {
     public void actionPerformed(AnActionEvent e) {
 
         Module module = myModule(e);
-        PsiMethod psiMethod = psiMethodAtCaret(e);
+        PsiMethod psiMethod = restMethodAtCaret(e);
 
         if (psiMethod != null) {
             ModuleHelper moduleHelper = ModuleHelper.create(module);
