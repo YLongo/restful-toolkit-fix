@@ -1,13 +1,10 @@
 package com.zhaow.restful.action;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiField;
 import com.zhaow.restful.common.PsiClassHelper;
-import org.jetbrains.annotations.Nullable;
 
 import java.awt.datatransfer.StringSelection;
 import java.util.ArrayList;
@@ -17,8 +14,7 @@ import java.util.List;
 public class ConvertClassToBulkValueAction extends AbstractBaseAction {
     @Override
     public void actionPerformed(AnActionEvent e) {
-        PsiElement psiElement = e.getData(CommonDataKeys.PSI_ELEMENT);
-        PsiClass psiClass = getPsiClass(psiElement);
+        PsiClass psiClass = psiClassAtCaret(e);
 
         if (psiClass == null) {
             return;
@@ -60,19 +56,8 @@ public class ConvertClassToBulkValueAction extends AbstractBaseAction {
         return fields;
     }
 
-    @Nullable
-    protected PsiClass getPsiClass(PsiElement psiElement) {
-        PsiClass psiClass = null;
-        if (psiElement instanceof PsiClass) {
-            psiClass = (PsiClass) psiElement;
-
-        }
-        return psiClass;
-    }
-
     @Override
     public void update(AnActionEvent e) {
-        PsiElement psiElement = e.getData(CommonDataKeys.PSI_ELEMENT);
-        setActionPresentationVisible(e, psiElement instanceof PsiClass);
+        setActionPresentationVisible(e, inEditorPopup(e));
     }
 }

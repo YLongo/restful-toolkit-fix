@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "me.jinghong.restful.toolkit"
-version = "2.0.11"
+version = "2.0.18"
 
 java {
     toolchain {

@@ -7,15 +7,10 @@ import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.psi.*;
 import com.zhaow.restful.action.AbstractBaseAction;
 import com.zhaow.restful.annotations.JaxrsHttpMethodAnnotation;
-import com.zhaow.restful.annotations.JaxrsRequestAnnotation;
-import com.zhaow.restful.annotations.SpringControllerAnnotation;
-import com.zhaow.restful.annotations.SpringRequestMethodAnnotation;
 import com.zhaow.restful.common.PsiMethodHelper;
 
 import java.awt.datatransfer.StringSelection;
 import java.util.Arrays;
-
-import static com.intellij.openapi.actionSystem.CommonDataKeys.PSI_ELEMENT;
 
 /**
  * 生成并复制restful url
@@ -28,8 +23,7 @@ public class GenerateUrlAction /*extends RestfulMethodSpringSupportedAction*/ ex
     public void actionPerformed(AnActionEvent e) {
 
         myEditor = e.getData(CommonDataKeys.EDITOR);
-        PsiElement psiElement = e.getData(PSI_ELEMENT);
-        PsiMethod psiMethod = (PsiMethod) psiElement;
+        PsiMethod psiMethod = psiMethodAtCaret(e);
         if (psiMethod == null) {
             return;
         }
@@ -66,63 +60,7 @@ public class GenerateUrlAction /*extends RestfulMethodSpringSupportedAction*/ ex
      */
     @Override
     public void update(AnActionEvent e) {
-        PsiElement psiElement = e.getData(CommonDataKeys.PSI_ELEMENT);
-
-        boolean visible = false;
-
-        if (psiElement instanceof PsiMethod) {
-            PsiMethod psiMethod = (PsiMethod) psiElement;
-            // rest method 或标注了RestController 注解
-            visible = (isRestController(psiMethod.getContainingClass()) || isRestfulMethod(psiMethod));
-        }
-
-        setActionPresentationVisible(e, visible);
+        setActionPresentationVisible(e, inEditorPopup(e));
     }
-
-    //包含 "RestController" "Controller"
-    private boolean isRestController(PsiClass containingClass) {
-        PsiModifierList modifierList = containingClass.getModifierList();
-
-        /*return modifierList.findAnnotation(SpringControllerAnnotation.REST_CONTROLLER.getQualifiedName()) != null ||
-                modifierList.findAnnotation(SpringControllerAnnotation.CONTROLLER.getQualifiedName()) != null ;*/
-
-        return modifierList.findAnnotation(SpringControllerAnnotation.REST_CONTROLLER.getQualifiedName()) != null ||
-                modifierList.findAnnotation(SpringControllerAnnotation.CONTROLLER.getQualifiedName()) != null ||
-                modifierList.findAnnotation(JaxrsRequestAnnotation.PATH.getQualifiedName()) != null;
-    }
-
-    private boolean isRestfulMethod(PsiMethod psiMethod) {
-        PsiAnnotation[] annotations = psiMethod.getModifierList().getAnnotations();
-
-        for (PsiAnnotation annotation : annotations) {
-            boolean match = Arrays.stream(SpringRequestMethodAnnotation.values()).map(sra -> sra.getQualifiedName()).anyMatch(name -> name.equals(annotation.getQualifiedName()));
-            if (match) {
-                return match;
-            }
-        }
-
-        for (PsiAnnotation annotation : annotations) {
-            boolean match = Arrays.stream(JaxrsHttpMethodAnnotation.values()).map(sra -> sra.getQualifiedName()).anyMatch(name -> name.equals(annotation.getQualifiedName()));
-            if (match) {
-                return match;
-            }
-        }
-
-        return false;
-    }
-
-
-    // private void showPopupBalloon(final String result) {
-    //     ApplicationManager.getApplication().invokeLater(new Runnable() {
-    //         @Override
-    //         public void run() {
-    //             JBPopupFactory factory = JBPopupFactory.getInstance();
-    //             factory.createHtmlTextBalloonBuilder(result, null, new JBColor(new Color(186, 238, 186), new Color(73, 117, 73)), null)
-    //                     .setFadeoutTime(5000)
-    //                     .createBalloon()
-    //                     .show(factory.guessBestPopupLocation(myEditor), Balloon.Position.above);
-    //         }
-    //     });
-    // }
 
 }

@@ -4,7 +4,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.ide.CopyPasteManager;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.util.PsiUtil;
 import com.zhaow.restful.common.PsiMethodHelper;
@@ -19,12 +18,8 @@ public class GenerateQueryParamAction extends SpringAnnotatedMethodAction {
     @Override
     public void actionPerformed(AnActionEvent e) {
 
-        PsiElement psiElement = e.getData(CommonDataKeys.PSI_ELEMENT);
-        PsiUtil.getTopLevelClass(psiElement);
-        PsiMethod psiMethod = null;
-        if (psiElement instanceof PsiMethod) {
-            psiMethod = (PsiMethod) psiElement;
-        }
+        PsiMethod psiMethod = psiMethodAtCaret(e);
+        PsiUtil.getTopLevelClass(psiMethod);
 
         if (psiMethod != null) {
             String params = PsiMethodHelper.create(psiMethod).buildParamString();

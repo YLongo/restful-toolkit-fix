@@ -5,13 +5,10 @@ import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.module.Module;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
 import com.zhaow.restful.common.PsiMethodHelper;
 
 import java.awt.datatransfer.StringSelection;
-
-import static com.intellij.openapi.actionSystem.CommonDataKeys.PSI_ELEMENT;
 
 /**
  * 生成并复制restful url
@@ -24,10 +21,9 @@ GenerateFullUrlAction extends SpringAnnotatedMethodAction {
     public void actionPerformed(AnActionEvent e) {
 
         Module module = myModule(e);
-        PsiElement psiElement = e.getData(PSI_ELEMENT);
-        if (psiElement instanceof PsiMethod) {
-            PsiMethod psiMethod = (PsiMethod) psiElement;
+        PsiMethod psiMethod = psiMethodAtCaret(e);
 
+        if (psiMethod != null) {
             ModuleHelper moduleHelper = ModuleHelper.create(module);
 
 //            String url = moduleHelper.buildFullUrlWithParams(psiMethod);

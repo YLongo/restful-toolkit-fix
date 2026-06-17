@@ -4,7 +4,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.ide.CopyPasteManager;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
 import com.zhaow.restful.common.PsiMethodHelper;
 import com.zhaow.restful.method.Parameter;
@@ -22,10 +21,9 @@ public class GenerateQueryParamJsonAction extends SpringAnnotatedMethodAction {
 
         //  @RequestBody entity 生成 json
 
-        PsiMethod psiMethod = null;
-        PsiElement psiElement = e.getData(CommonDataKeys.PSI_ELEMENT);
-        if (psiElement instanceof PsiMethod) {
-            psiMethod = (PsiMethod) psiElement;
+        PsiMethod psiMethod = psiMethodAtCaret(e);
+        if (psiMethod == null) {
+            return;
         }
 
         PsiMethodHelper psiMethodHelper = PsiMethodHelper.create(psiMethod);
